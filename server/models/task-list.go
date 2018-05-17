@@ -1,5 +1,9 @@
 package models
 
+import (
+  "errors"
+)
+
 // TaskList
 type TaskList struct {
     ID        int   `json:"id,omitempty"`
@@ -36,5 +40,33 @@ func GetTaskListDetailsById (taskListId int) TaskList {
   existingTaskList.Tasks = tasks
 
   return existingTaskList
+}
+
+// Delete Task List By Id
+func DeleteTaskList(taskListId int) (bool, error) {
+
+    deleted := false
+
+    //Delete TaskList
+    for idx, item := range TaskLists {
+        if item.ID == taskListId {
+            TaskLists = append(TaskLists[:idx], TaskLists[idx+1:]...)
+            deleted = true
+            break
+        }
+    }
+
+    //Delete Tasks
+    for idx, item := range Tasks {
+        if item.TaskListId == taskListId {
+            Tasks = append(Tasks[:idx], Tasks[idx+1:]...)
+            break
+        }
+    }
+
+    if(deleted == true) {
+      return deleted, nil
+    }
+    return deleted, errors.New("TaskList Not Found !")
 }
 

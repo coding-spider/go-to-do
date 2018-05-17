@@ -53,23 +53,13 @@ func DeleteTaskListById(w http.ResponseWriter, r *http.Request) {
     params := mux.Vars(r)
     taskListId, _ := strconv.Atoi(params["id"])
 
-    //Delete TaskList
-    for idx, item := range models.TaskLists {
-        if item.ID == taskListId {
-            models.TaskLists = append(models.TaskLists[:idx], models.TaskLists[idx+1:]...)
-            break
-        }
-    }
-
-    //Delete Tasks
-    for idx, item := range models.Tasks {
-        if item.TaskListId == taskListId {
-            models.Tasks = append(models.Tasks[:idx], models.Tasks[idx+1:]...)
-            break
-        }
-    }
     w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(true)
+
+    if _, err := models.DeleteTaskList(taskListId); err != nil {
+            http.Error(w, err.Error(), http.StatusBadRequest)
+        } else {
+            json.NewEncoder(w).Encode(true)
+        }
 }
 
 // Delete Task By Id
