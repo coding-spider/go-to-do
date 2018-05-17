@@ -78,19 +78,15 @@ func DeleteTaskFromTaskList(w http.ResponseWriter, r *http.Request) {
     taskListId, _ := strconv.Atoi(params["id"])
     taskId, _ := strconv.Atoi(params["taskId"])
 
-    //Delete TaskList
-    for idx, item := range models.Tasks {
-        if item.TaskListId == taskListId && item.ID == taskId {
-            models.Tasks = append(models.Tasks[:idx], models.Tasks[idx+1:]...)
-            break
-        }
-    }
-
-    var modifiedTaskList models.TaskList
-    modifiedTaskList = models.GetTaskListDetailsById(taskListId)
-
     w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(modifiedTaskList)
+
+    if _, err := models.DeleteTask(taskListId, taskId); err != nil {
+            http.Error(w, err.Error(), http.StatusBadRequest)
+        } else {
+            var modifiedTaskList models.TaskList
+            modifiedTaskList = models.GetTaskListDetailsById(taskListId)
+            json.NewEncoder(w).Encode(modifiedTaskList)
+        }
 }
 
 // Update Task By Id

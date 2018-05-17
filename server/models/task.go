@@ -32,3 +32,20 @@ func UpdateTaskStatus (taskListId int, taskId int, status string) (bool, error){
     }
     return false, errors.New("Invalid Details Passed !")
 }
+
+func DeleteTask (taskListId int, taskId int) (bool, error){
+    deleted := false
+    //Delete TaskList
+    for idx, item := range Tasks {
+        if item.TaskListId == taskListId && item.ID == taskId {
+            Tasks = append(Tasks[:idx], Tasks[idx+1:]...)
+            deleted = true
+            break
+        }
+    }
+
+    if(deleted == true) {
+      return deleted, nil
+    }
+    return deleted, errors.New("Task Not Found !")
+}
