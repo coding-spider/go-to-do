@@ -39,17 +39,12 @@ func CreateTaskForATaskList(w http.ResponseWriter, r *http.Request) {
 // Fetching Task List by Id
 func GetTaskListById(w http.ResponseWriter, r *http.Request) {
     params := mux.Vars(r)
-    taskId, _ := strconv.Atoi(params["id"])
+    taskListId, _ := strconv.Atoi(params["id"])
+    var foundTaskList models.TaskList
+    foundTaskList = models.GetTaskListDetailsById(taskListId)
     w.Header().Set("Content-Type", "application/json")
-    for _, item := range models.TaskLists {
-        if item.ID == taskId {
-            json.NewEncoder(w).Encode(item)
-            return
-        }
-    }
-    json.NewEncoder(w).Encode(nil)
+    json.NewEncoder(w).Encode(foundTaskList)
 }
-
 
 // Delete Task List By Id
 func DeleteTaskListById(w http.ResponseWriter, r *http.Request) {

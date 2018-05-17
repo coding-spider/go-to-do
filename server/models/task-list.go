@@ -16,3 +16,25 @@ func CreateNewTaskList (newTaskList TaskList) TaskList{
   return newTaskList;
 }
 
+func GetTaskListDetailsById (taskListId int) TaskList {
+  var existingTaskList TaskList
+  var tasks []Task
+
+  for _, item := range TaskLists {
+      if item.ID == taskListId {
+          existingTaskList = item
+          break
+      }
+  }
+
+  for _, item := range Tasks {
+      if item.TaskListId == taskListId {
+          tasks = append(tasks, item);
+      }
+  }
+
+  existingTaskList.Tasks = tasks
+
+  return existingTaskList
+}
+
