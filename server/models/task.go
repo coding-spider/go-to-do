@@ -15,10 +15,24 @@ type Task struct {
 
 var Tasks []Task
 
-func CreateNewTask (newTask Task) Task{
-  newTask.ID = len(Tasks) + 1
-  Tasks = append(Tasks, newTask)
-  return newTask;
+func CreateNewTask (newTask Task) (bool, error){
+
+    taskListFound := false
+    //Delete TaskList
+    for _, item := range TaskLists {
+        if item.ID == newTask.TaskListId {
+            taskListFound = true
+            break
+        }
+    }
+
+    if(taskListFound == false) {
+      return false, errors.New("Task Not Found !")
+    }
+
+    newTask.ID = len(Tasks) + 1
+    Tasks = append(Tasks, newTask)
+    return true, nil
 }
 
 func UpdateTaskStatus (taskListId int, taskId int, status string) (bool, error){

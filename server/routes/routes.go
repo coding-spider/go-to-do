@@ -31,11 +31,15 @@ func CreateTaskForATaskList(w http.ResponseWriter, r *http.Request) {
     var newTask models.Task
     _ = json.NewDecoder(r.Body).Decode(&newTask)
     newTask.TaskListId, _ = strconv.Atoi(params["id"])
-    createdTask := models.CreateNewTask(newTask)
-    var modifiedTaskList models.TaskList
-    modifiedTaskList = models.GetTaskListDetailsById(createdTask.TaskListId)
+
     w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(modifiedTaskList)
+    if _, err := models.CreateNewTask(newTask); err != nil {
+            http.Error(w, err.Error(), http.StatusBadRequest)
+        } else {
+            var modifiedTaskList models.TaskList
+            modifiedTaskList = models.GetTaskListDetailsById(newTask.TaskListId)
+            json.NewEncoder(w).Encode(modifiedTaskList)
+        }
 }
 
 // Fetching Task List by Id
