@@ -4,6 +4,7 @@ import (
     "encoding/json"
     "github.com/gorilla/mux"
     "net/http"
+    "strconv"
     // "fmt"
 
     "go-to-do/server/models"
@@ -35,9 +36,23 @@ func CreateTaskForATaskList(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(createdTask)
 }
 
+func GetTaskListById(w http.ResponseWriter, r *http.Request) {
+    params := mux.Vars(r)
+    taskId, _ := strconv.Atoi(params["id"])
+    w.Header().Set("Content-Type", "application/json")
+    for _, item := range models.TaskLists {
+        if item.ID == taskId {
+            json.NewEncoder(w).Encode(item)
+            return
+        }
+    }
+    json.NewEncoder(w).Encode(nil)
+}
+
 func GetRouter() *mux.Router {
     router := mux.NewRouter()
     router.HandleFunc("/tasklists", GetTaskLists).Methods("GET")
+    router.HandleFunc("/tasklists/{id}", GetTaskListById).Methods("GET")
     router.HandleFunc("/tasklists", CreateTaskList).Methods("POST")
     router.HandleFunc("/tasklists/{id}/createTask", CreateTaskForATaskList).Methods("POST")
     return router
