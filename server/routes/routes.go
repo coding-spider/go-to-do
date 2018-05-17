@@ -93,6 +93,29 @@ func DeleteTaskFromTaskList(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(modifiedTaskList)
 }
 
+// Update Task By Id
+func UpdateTaskStatus(w http.ResponseWriter, r *http.Request) {
+    params := mux.Vars(r)
+    taskListId, _ := strconv.Atoi(params["id"])
+    taskId, _ := strconv.Atoi(params["taskId"])
+    status, _ := params["status"]
+
+    //Update TaskList
+    for idx := 0; idx < len(models.Tasks); idx++ {
+        item := &models.Tasks[idx]
+        if item.TaskListId == taskListId && item.ID == taskId {
+            item.Status = status
+            break
+        }
+    }
+
+    var modifiedTaskList models.TaskList
+    modifiedTaskList = models.GetTaskListDetailsById(taskListId)
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(modifiedTaskList)
+}
+
 func GetRouter() *mux.Router {
     router := mux.NewRouter()
     router.HandleFunc("/tasklists", GetTaskLists).Methods("GET")
@@ -101,6 +124,7 @@ func GetRouter() *mux.Router {
     router.HandleFunc("/tasklists", CreateTaskList).Methods("POST")
     router.HandleFunc("/tasklists/{id}/createTask", CreateTaskForATaskList).Methods("POST")
     router.HandleFunc("/tasklists/{id}/deleteTask/{taskId}", DeleteTaskFromTaskList).Methods("DELETE")
+    router.HandleFunc("/tasklists/{id}/updateTaskStatus/{taskId}/status/{status}", UpdateTaskStatus).Methods("PUT")
     fmt.Println("Server is running");
     return router
 }
