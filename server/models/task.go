@@ -18,7 +18,7 @@ var Tasks []Task
 func CreateNewTask (newTask Task) (bool, error){
 
     taskListFound := false
-    //Delete TaskList
+    //Find TaskList
     for _, item := range TaskLists {
         if item.ID == newTask.TaskListId {
             taskListFound = true
