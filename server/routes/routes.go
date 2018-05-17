@@ -19,7 +19,7 @@ func GetTaskLists(w http.ResponseWriter, r *http.Request) {
 func CreateTaskList(w http.ResponseWriter, r *http.Request) {
     var newTaskList models.TaskList
     _ = json.NewDecoder(r.Body).Decode(&newTaskList)
-    createdTaskList := models.CreateNewTaskList(&newTaskList)
+    createdTaskList := models.CreateNewTaskList(newTaskList)
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(createdTaskList)
 }

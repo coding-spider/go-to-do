@@ -10,9 +10,9 @@ type TaskList struct {
 
 var TaskLists []TaskList
 
-func CreateNewTaskList (newTaskList *TaskList) *TaskList{
+func CreateNewTaskList (newTaskList TaskList) TaskList{
   newTaskList.ID = len(TaskLists) + 1
-  TaskLists = append(TaskLists, *newTaskList)
+  TaskLists = append(TaskLists, newTaskList)
   return newTaskList;
 }
 
