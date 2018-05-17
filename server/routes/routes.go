@@ -24,9 +24,21 @@ func CreateTaskList(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(createdTaskList)
 }
 
+// Creating task for a task list
+func CreateTaskForATaskList(w http.ResponseWriter, r *http.Request) {
+    params := mux.Vars(r)
+    var newTask models.Task
+    _ = json.NewDecoder(r.Body).Decode(&newTask)
+    newTask.TaskListId = params["id"]
+    createdTask := models.CreateNewTask(newTask)
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(createdTask)
+}
+
 func GetRouter() *mux.Router {
     router := mux.NewRouter()
     router.HandleFunc("/tasklists", GetTaskLists).Methods("GET")
     router.HandleFunc("/tasklists", CreateTaskList).Methods("POST")
+    router.HandleFunc("/tasklists/{id}/createTask", CreateTaskForATaskList).Methods("POST")
     return router
 }
