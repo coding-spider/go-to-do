@@ -51,11 +51,11 @@ func GetTaskListById(w http.ResponseWriter, r *http.Request) {
 // Delete Task List By Id
 func DeleteTaskListById(w http.ResponseWriter, r *http.Request) {
     params := mux.Vars(r)
-    taskId, _ := strconv.Atoi(params["id"])
+    taskListId, _ := strconv.Atoi(params["id"])
 
     //Delete TaskList
     for idx, item := range models.TaskLists {
-        if item.ID == taskId {
+        if item.ID == taskListId {
             models.TaskLists = append(models.TaskLists[:idx], models.TaskLists[idx+1:]...)
             break
         }
@@ -63,13 +63,34 @@ func DeleteTaskListById(w http.ResponseWriter, r *http.Request) {
 
     //Delete Tasks
     for idx, item := range models.Tasks {
-        if item.TaskListId == taskId {
+        if item.TaskListId == taskListId {
             models.Tasks = append(models.Tasks[:idx], models.Tasks[idx+1:]...)
             break
         }
     }
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(true)
+}
+
+// Delete Task By Id
+func DeleteTaskFromTaskList(w http.ResponseWriter, r *http.Request) {
+    params := mux.Vars(r)
+    taskListId, _ := strconv.Atoi(params["id"])
+    taskId, _ := strconv.Atoi(params["taskId"])
+
+    //Delete TaskList
+    for idx, item := range models.Tasks {
+        if item.TaskListId == taskListId && item.ID == taskId {
+            models.Tasks = append(models.Tasks[:idx], models.Tasks[idx+1:]...)
+            break
+        }
+    }
+
+    var modifiedTaskList models.TaskList
+    modifiedTaskList = models.GetTaskListDetailsById(taskListId)
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(modifiedTaskList)
 }
 
 func GetRouter() *mux.Router {
@@ -79,6 +100,7 @@ func GetRouter() *mux.Router {
     router.HandleFunc("/tasklists/{id}", DeleteTaskListById).Methods("DELETE")
     router.HandleFunc("/tasklists", CreateTaskList).Methods("POST")
     router.HandleFunc("/tasklists/{id}/createTask", CreateTaskForATaskList).Methods("POST")
+    router.HandleFunc("/tasklists/{id}/deleteTask/{taskId}", DeleteTaskFromTaskList).Methods("DELETE")
     fmt.Println("Server is running");
     return router
 }
